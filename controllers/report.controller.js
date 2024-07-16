@@ -315,7 +315,7 @@ const generateReport = async (year, month, data, subVillageStats) => {
     if (!fs.existsSync(outputPath)) {
       fs.mkdirSync(outputPath, { recursive: true });
     }
- 
+
     const filePath = path.join(
       outputPath,
       `TB BB ${reportEntity.monthCapital[month - 1]} Pegundungan ${year}.xlsx`
@@ -345,7 +345,19 @@ const downloadReport = async (req, res) => {
     }
 
     console.log(`Report generated at ${filePath}`);
-    res.status(200).download(filePath);
+    res.status(200).download(filePath, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log(`File ${filePath} deleted successfully.`);
+          }
+        });
+      }
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
