@@ -273,6 +273,7 @@ const generateReport = async (year, month, data, subVillageStats) => {
 
   const workbook = new ExcelJS.Workbook();
   const templatePath = path.join(__dirname, 'template.xlsx');
+  console.log(templatePath);
 
   await workbook.xlsx.readFile(templatePath);
   const worksheetOne = workbook.getWorksheet('Mentari I');
@@ -309,7 +310,7 @@ const generateReport = async (year, month, data, subVillageStats) => {
     worksheetFour.getCell(5, headersSheetFour[`${jenisKelamin}_${index + 1}`]).value = item;
   });
 
-  const outputPath = './output';
+  const outputPath = '/tmp';
 
   try {
     if (!fs.existsSync(outputPath)) {
