@@ -15,10 +15,10 @@ app.use(cors(corsOptions));
 mongoose.connect(process.env.SITUNTING_DATABASE_URL);
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Welcome to Situnting Backend!');
 });
 
-app.use('/auth', require('./routes/auth.route.js'));
+// app.use('/auth', require('./routes/auth.route.js'));
 app.use('/parents', require('./routes/parent.route.js'));
 app.use('/children', require('./routes/child.route.js'));
 app.use('/records', require('./routes/record.route.js'));
