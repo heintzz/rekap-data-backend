@@ -169,7 +169,7 @@ const updateRecord = async (req, res) => {
   try {
     const record = await Record.findById(recordId);
     if (!record) {
-      return res.status(404).json({ success: false, message: 'Record not found' });
+      return res.status(404).json({ success: false, message: 'Pemeriksaan tidak ditemukan' });
     }
 
     const updatedRecord = await Record.findByIdAndUpdate(
@@ -268,7 +268,7 @@ const getRecords = async (req, res) => {
     }
 };
 
-const getGroupedRecordDateList = async (req, res) => {
+const getGroupedRecordDateList = async (_, res) => {
   try {
     const records = await Record.aggregate([
       {
@@ -302,7 +302,7 @@ const getRecord = async (req, res) => {
   try {
     const record = await Record.findById(recordId);
     if (!record) {
-      return res.status(404).json({ success: false, message: 'Record not found' });
+      return res.status(404).json({ success: false, message: 'Pemeriksaan tidak ditemukan' });
     }
 
     res.status(200).json({
