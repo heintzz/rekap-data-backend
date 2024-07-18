@@ -1,4 +1,8 @@
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://situnting.vercel.app',
+];
 
 const corsOptions = {
   origin: (origin, callback) => {
