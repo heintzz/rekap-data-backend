@@ -268,6 +268,27 @@ const getRecords = async (req, res) => {
     }
 };
 
+const getRecordsByChildId = async (req, res) => {
+  const idAnak = req.params.id;
+
+  try {
+    const record = await Record.find({ idAnak });
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: 'Pencatatan tidak ditemukan',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: record,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const getGroupedRecordDateList = async (_, res) => {
   try {
     const records = await Record.aggregate([
@@ -318,6 +339,7 @@ const recordController = {
   getRecord,
   getRecords,
   getGroupedRecordDateList,
+  getRecordsByChildId,
   createRecord,
   updateRecord,
 };
