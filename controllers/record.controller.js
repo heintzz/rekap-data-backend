@@ -272,7 +272,7 @@ const getRecordsByChildId = async (req, res) => {
   const idAnak = req.params.id;
 
   try {
-    const record = await Record.find({ idAnak });
+    const record = await Record.find({ idAnak }).sort({ tanggalPencatatan: -1 });
     if (!record) {
       return res.status(404).json({
         success: false,

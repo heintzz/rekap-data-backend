@@ -121,6 +121,25 @@ const addChildData = async (req, res) => {
   }
 };
 
+const getChildrenByParentId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const children = await Child.find({ idOrangTua: id }).exec();
+
+    res.status(200).json({
+      success: true,
+      message: 'Data anak berhasil didapatkan',
+      data: children,
+    });
+  } catch {
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan pada server',
+      error: error.message,
+    });
+  }
+};
+
 const deleteChildData = async (req, res) => {
   const { id } = req.params;
 
@@ -156,6 +175,7 @@ const childController = {
   updateChildData,
   deleteChildData,
   getChildrenList,
+  getChildrenByParentId,
 };
 
 module.exports = childController;

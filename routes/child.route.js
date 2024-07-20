@@ -8,5 +8,6 @@ router.get('/:id', childController.getChildById);
 router.put('/:id', childController.updateChildData);
 router.delete('/:id', childController.deleteChildData);
 router.post('/', childController.addChildData);
+router.get('/parent/:id', childController.getChildrenByParentId);
 
 module.exports = router;
