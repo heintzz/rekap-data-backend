@@ -23,6 +23,7 @@ app.use('/parents', require('./routes/parent.route.js'));
 app.use('/children', require('./routes/child.route.js'));
 app.use('/records', require('./routes/record.route.js'));
 app.use('/reports', require('./routes/report.route.js'));
+app.use('/summary', require('./routes/summary.route.js'));
 
 mongoose.connection.on('connected', () => {
   console.log('Mongoose connected to db');
