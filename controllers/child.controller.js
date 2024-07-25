@@ -153,7 +153,7 @@ const deleteChildData = async (req, res) => {
     }
 
     await Record.deleteMany({ idAnak: id });
-    await child.deleteOne({ _id: id });
+    await Child.deleteOne({ _id: id });
 
     res.status(200).json({
       success: true,

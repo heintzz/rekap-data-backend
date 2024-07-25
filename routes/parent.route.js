@@ -5,5 +5,6 @@ const parentController = require('../controllers/parent.controller');
 
 router.get('/', parentController.getParentsList);
 router.post('/', parentController.addParentData);
+router.delete('/:id', parentController.deleteParentData);
 
 module.exports = router;

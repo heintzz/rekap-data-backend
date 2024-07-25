@@ -82,62 +82,122 @@ const commitJumlahBalitaNaik = (data, month) => {
       summary['total'][jenisKelamin]++;
     }
 
+    const isEmpty = !now;
+    const prevEmpty = !prev1;
+    const prevTwoEmpty = !prev2;
+
     const usia = row.usia;
 
     let difference = 0;
 
-    if (!prev1 && !now) {
-      summary['2T'][jenisKelamin]++;
-      console.log('tidak hadir dua kali');
-    } else if (!now) {
+    const differenceOne = now - prev1.toFixed(2);
+    const differenceTwo = prev1 - prev2.toFixed(2);
+
+    if (isEmpty && prevEmpty && prevTwoEmpty) {
       summary['T'][jenisKelamin]++;
-      console.log('tidak hadir');
-    } else {
-      difference = parseFloat((now - prev1).toFixed(2)) * 1000;
-      if (usia <= 5) {
-        if (difference >= reportEntity.rangeToBoundaries[usia]) {
-          summary['0-5'][jenisKelamin]++;
-        } else {
-          summary['T'][jenisKelamin]++;
-          console.log('tidak naik berat badan');
-        }
-      } else if (usia >= 6 && usia <= 7) {
-        if (difference >= reportEntity.rangeToBoundaries['6-7']) {
-          summary['6-11'][jenisKelamin]++;
-        } else {
-          summary['T'][jenisKelamin]++;
-          console.log('tidak naik berat badan');
-        }
-      } else if (usia >= 8 && usia <= 11) {
-        if (difference >= reportEntity.rangeToBoundaries['8-11']) {
-          summary['6-11'][jenisKelamin]++;
-        } else {
-          summary['T'][jenisKelamin]++;
-          console.log('tidak naik berat badan');
-        }
-      } else if (usia >= 12 && usia <= 23) {
-        if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-          summary['12-23'][jenisKelamin]++;
-        } else {
-          summary['T'][jenisKelamin]++;
-          console.log('tidak naik berat badan');
-        }
-      } else if (usia >= 24 && usia <= 35) {
-        if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-          summary['24-35'][jenisKelamin]++;
-        } else {
-          summary['T'][jenisKelamin]++;
-          console.log('tidak naik berat badan');
-        }
-      } else if (usia >= 36 && usia <= 59) {
-        if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-          summary['36-59'][jenisKelamin]++;
-        } else {
-          summary['T'][jenisKelamin]++;
-          console.log('tidak naik berat badan');
+    } else if (now) {
+      if (prevEmpty) {
+        summary['T'][jenisKelamin]++;
+      } else {
+        if (usia <= 5) {
+          if (difference >= reportEntity.rangeToBoundaries[usia]) {
+            summary['0-5'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 6 && usia <= 7) {
+          if (difference >= reportEntity.rangeToBoundaries['6-7']) {
+            summary['6-11'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 8 && usia <= 11) {
+          if (difference >= reportEntity.rangeToBoundaries['8-11']) {
+            summary['6-11'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 12 && usia <= 23) {
+          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['12-23'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 24 && usia <= 35) {
+          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['24-35'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 36 && usia <= 59) {
+          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['36-59'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
         }
       }
+    } else {
+      if (differenceOne <= 0 && differenceTwo <= 0) {
+        summary['2T'][jenisKelamin]++;
+      }
     }
+
+    // kalo ada dua data baru diitung -> 2T
+    // kalo kosong2 terus -> T
+
+    if (now)
+      if (!prev1 && !now) {
+        summary['2T'][jenisKelamin]++;
+      } else if (!now) {
+        summary['T'][jenisKelamin]++;
+        console.log('tidak hadir');
+      } else {
+        difference = parseFloat((now - prev1).toFixed(2)) * 1000;
+        if (usia <= 5) {
+          if (difference >= reportEntity.rangeToBoundaries[usia]) {
+            summary['0-5'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+            console.log('tidak naik berat badan');
+          }
+        } else if (usia >= 6 && usia <= 7) {
+          if (difference >= reportEntity.rangeToBoundaries['6-7']) {
+            summary['6-11'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+            console.log('tidak naik berat badan');
+          }
+        } else if (usia >= 8 && usia <= 11) {
+          if (difference >= reportEntity.rangeToBoundaries['8-11']) {
+            summary['6-11'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+            console.log('tidak naik berat badan');
+          }
+        } else if (usia >= 12 && usia <= 23) {
+          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['12-23'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+            console.log('tidak naik berat badan');
+          }
+        } else if (usia >= 24 && usia <= 35) {
+          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['24-35'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+            console.log('tidak naik berat badan');
+          }
+        } else if (usia >= 36 && usia <= 59) {
+          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['36-59'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+            console.log('tidak naik berat badan');
+          }
+        }
+      }
   });
 
   count = Object.values(summary).flatMap((item) => [item.l, item.p]);
