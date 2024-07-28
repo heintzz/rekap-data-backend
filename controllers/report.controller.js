@@ -442,7 +442,7 @@ async function generateSummary(year, bulan) {
       summary[`tb_${monthName}`] = parseFloat(data.tinggiBadan).toFixed(1);
     });
 
-    const firstTime = child.monthlyData.filter((data) => data.month === bulan)[0].pertamaKali;
+    const firstTime = child.monthlyData.filter((data) => data.month === bulan)[0]?.pertamaKali;
     summary.pertamaKali = firstTime;
 
     return summary;
