@@ -81,118 +81,118 @@ const commitJumlahBalitaNaik = (data, month) => {
 
     if (row.pertamaKali) {
       summary['B'][jenisKelamin]++;
-    }
-
-    if (now !== null && prevOne !== null && prevTwo !== null) {
-      const diffOne = parseFloat((now - prevOne).toFixed(2)) * 1000;
-      const diffTwo = parseFloat((prevOne - prevTwo).toFixed(2)) * 1000;
-
-      // cek apakah keduanya turun/tetap
-      if (diffOne <= 0 && diffTwo <= 0) {
-        summary['2T'][jenisKelamin]++;
-      } else if (diffOne > 0) {
-        if (usia <= 5) {
-          if (diffOne >= reportEntity.rangeToBoundaries[usia]) {
-            summary['0-5'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 6 && usia <= 7) {
-          if (diffOne >= reportEntity.rangeToBoundaries['6-7']) {
-            summary['6-11'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 8 && usia <= 11) {
-          if (diffOne >= reportEntity.rangeToBoundaries['8-11']) {
-            summary['6-11'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 12 && usia <= 23) {
-          if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['12-23'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 24 && usia <= 35) {
-          if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['24-35'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 36 && usia <= 59) {
-          if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['36-59'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        }
-      } else if (diffOne <= 0) {
-        summary['T'][jenisKelamin]++;
-      }
-    } else if (now !== null && prevOne !== null) {
-      const difference = parseFloat((now - prevOne).toFixed(2)) * 1000;
-      if (difference > 0) {
-        if (usia <= 5) {
-          if (difference >= reportEntity.rangeToBoundaries[usia]) {
-            summary['0-5'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 6 && usia <= 7) {
-          if (difference >= reportEntity.rangeToBoundaries['6-7']) {
-            summary['6-11'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 8 && usia <= 11) {
-          if (difference >= reportEntity.rangeToBoundaries['8-11']) {
-            summary['6-11'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 12 && usia <= 23) {
-          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['12-23'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 24 && usia <= 35) {
-          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['24-35'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 36 && usia <= 59) {
-          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['36-59'][jenisKelamin]++;
-            summary['total'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        }
-      } else {
-        summary['T'][jenisKelamin]++;
-      }
-    } else if (now !== null) {
-      summary['T'][jenisKelamin]++;
-      summary['O'][jenisKelamin]++;
-    } else if (prevOne !== null) {
-      summary['T'][jenisKelamin]++;
     } else {
-      summary['2T'][jenisKelamin]++;
+      if (now !== null && prevOne !== null && prevTwo !== null) {
+        const diffOne = parseFloat((now - prevOne).toFixed(2)) * 1000;
+        const diffTwo = parseFloat((prevOne - prevTwo).toFixed(2)) * 1000;
+
+        // cek apakah keduanya turun/tetap
+        if (diffOne <= 0 && diffTwo <= 0) {
+          summary['2T'][jenisKelamin]++;
+        } else if (diffOne > 0) {
+          if (usia <= 5) {
+            if (diffOne >= reportEntity.rangeToBoundaries[usia]) {
+              summary['0-5'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 6 && usia <= 7) {
+            if (diffOne >= reportEntity.rangeToBoundaries['6-7']) {
+              summary['6-11'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 8 && usia <= 11) {
+            if (diffOne >= reportEntity.rangeToBoundaries['8-11']) {
+              summary['6-11'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 12 && usia <= 23) {
+            if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
+              summary['12-23'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 24 && usia <= 35) {
+            if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
+              summary['24-35'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 36 && usia <= 59) {
+            if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
+              summary['36-59'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          }
+        } else if (diffOne <= 0) {
+          summary['T'][jenisKelamin]++;
+        }
+      } else if (now !== null && prevOne !== null) {
+        const difference = parseFloat((now - prevOne).toFixed(2)) * 1000;
+        if (difference > 0) {
+          if (usia <= 5) {
+            if (difference >= reportEntity.rangeToBoundaries[usia]) {
+              summary['0-5'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 6 && usia <= 7) {
+            if (difference >= reportEntity.rangeToBoundaries['6-7']) {
+              summary['6-11'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 8 && usia <= 11) {
+            if (difference >= reportEntity.rangeToBoundaries['8-11']) {
+              summary['6-11'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 12 && usia <= 23) {
+            if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+              summary['12-23'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 24 && usia <= 35) {
+            if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+              summary['24-35'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          } else if (usia >= 36 && usia <= 59) {
+            if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+              summary['36-59'][jenisKelamin]++;
+              summary['total'][jenisKelamin]++;
+            } else {
+              summary['T'][jenisKelamin]++;
+            }
+          }
+        } else {
+          summary['T'][jenisKelamin]++;
+        }
+      } else if (now !== null) {
+        summary['T'][jenisKelamin]++;
+        summary['O'][jenisKelamin]++;
+      } else if (prevOne !== null) {
+        summary['T'][jenisKelamin]++;
+      } else {
+        summary['2T'][jenisKelamin]++;
+      }
     }
 
     // let difference = 0;
