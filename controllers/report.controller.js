@@ -325,7 +325,7 @@ const generateReport = async (year, month, data, subVillageStats) => {
   }
 };
 
-async function generateSummary(year) {
+async function generateSummary(year, bulan) {
   const startDate = new Date(year - 1, 11, 1);
   const endDate = new Date(year + 1, 0, 1);
 
@@ -440,8 +440,10 @@ async function generateSummary(year) {
       const monthName = reportEntity.monthNames[month];
       summary[`bb_${monthName}`] = parseFloat(data.beratBadan).toFixed(1);
       summary[`tb_${monthName}`] = parseFloat(data.tinggiBadan).toFixed(1);
-      summary.pertamaKali = data.pertamaKali;
     });
+
+    const firstTime = child.monthlyData.filter((data) => data.month === bulan)[0].pertamaKali;
+    summary.pertamaKali = firstTime;
 
     return summary;
   });
@@ -452,7 +454,7 @@ const downloadReport = async (req, res) => {
   let month = req.query.month ? parseInt(req.query.month) : null;
 
   try {
-    const summary = await generateSummary(year);
+    const summary = await generateSummary(year, month);
     const childSummary = await getChildSummary();
     const filePath = await generateReport(year, month, summary, childSummary);
 
