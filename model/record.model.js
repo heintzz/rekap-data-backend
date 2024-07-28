@@ -37,7 +37,7 @@ const recordSchema = new mongoose.Schema({
   vitaminA: {
     type: Boolean,
   },
-  asiEksklusif: {
+  asi: {
     type: Boolean,
   },
   mpasi: {

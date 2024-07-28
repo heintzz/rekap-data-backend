@@ -79,6 +79,8 @@ const commitJumlahBalitaNaik = (data, month) => {
     const usia = row.usia;
     const jenisKelamin = row.l === 'x' ? 'l' : 'p';
 
+    console.log(row);
+
     if (row.pertamaKali) {
       summary['B'][jenisKelamin]++;
     } else {

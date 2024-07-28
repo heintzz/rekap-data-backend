@@ -178,12 +178,16 @@ const updateRecord = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    updatedRecord.status = inferNutritionStatus(
+    const newStatus = inferNutritionStatus(
       req.body?.usia ? req.body.usia : updatedRecord.usia,
       req.body?.beratBadan ? req.body.beratBadan : updatedRecord.beratBadan,
       req.body?.tinggiBadan ? req.body.tinggiBadan : updatedRecord.tinggiBadan,
       req.body?.jenisKelamin ? req.body.jenisKelamin : updatedRecord.jenisKelamin
     );
+
+    updatedRecord.status = newStatus;
+
+    await updatedRecord.save();
 
     res.status(200).json({
       success: true,
