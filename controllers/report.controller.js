@@ -73,131 +73,173 @@ const commitJumlahBalitaNaik = (data, month) => {
 
   data.map((row) => {
     const now = row[`bb_${reportEntity.month[month]}`] || null;
-    const prev1 = row[`bb_${reportEntity.month[month - 1]}`] || null;
-    const prev2 = row[`bb_${reportEntity.month[month - 2]}`] || null;
-
-    const jenisKelamin = row.l === 'x' ? 'l' : 'p';
-
-    if (now) {
-      summary['total'][jenisKelamin]++;
-    }
-
-    const isEmpty = !now;
-    const prevEmpty = !prev1;
-    const prevTwoEmpty = !prev2;
+    const prevOne = row[`bb_${reportEntity.month[month - 1]}`] || null;
+    const prevTwo = row[`bb_${reportEntity.month[month - 2]}`] || null;
 
     const usia = row.usia;
+    const jenisKelamin = row.l === 'x' ? 'l' : 'p';
 
-    let difference = 0;
+    if (row.pertamaKali) {
+      summary['B'][jenisKelamin]++;
+    }
 
-    // const differenceOne = now - prev1?.toFixed(2);
-    // const differenceTwo = prev1 - prev2?.toFixed(2);
+    if (now !== null && prevOne !== null && prevTwo !== null) {
+      const diffOne = parseFloat((now - prevOne).toFixed(2)) * 1000;
+      const diffTwo = parseFloat((prevOne - prevTwo).toFixed(2)) * 1000;
 
-    // if (isEmpty && prevEmpty && prevTwoEmpty) {
-    //   summary['T'][jenisKelamin]++;
-    // } else if (now) {
-    //   if (prevEmpty) {
-    //     summary['T'][jenisKelamin]++;
-    //   } else {
-    //     if (usia <= 5) {
-    //       if (difference >= reportEntity.rangeToBoundaries[usia]) {
-    //         summary['0-5'][jenisKelamin]++;
-    //       } else {
-    //         summary['T'][jenisKelamin]++;
-    //       }
-    //     } else if (usia >= 6 && usia <= 7) {
-    //       if (difference >= reportEntity.rangeToBoundaries['6-7']) {
-    //         summary['6-11'][jenisKelamin]++;
-    //       } else {
-    //         summary['T'][jenisKelamin]++;
-    //       }
-    //     } else if (usia >= 8 && usia <= 11) {
-    //       if (difference >= reportEntity.rangeToBoundaries['8-11']) {
-    //         summary['6-11'][jenisKelamin]++;
-    //       } else {
-    //         summary['T'][jenisKelamin]++;
-    //       }
-    //     } else if (usia >= 12 && usia <= 23) {
-    //       if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-    //         summary['12-23'][jenisKelamin]++;
-    //       } else {
-    //         summary['T'][jenisKelamin]++;
-    //       }
-    //     } else if (usia >= 24 && usia <= 35) {
-    //       if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-    //         summary['24-35'][jenisKelamin]++;
-    //       } else {
-    //         summary['T'][jenisKelamin]++;
-    //       }
-    //     } else if (usia >= 36 && usia <= 59) {
-    //       if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-    //         summary['36-59'][jenisKelamin]++;
-    //       } else {
-    //         summary['T'][jenisKelamin]++;
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   if (differenceOne <= 0 && differenceTwo <= 0) {
-    //     summary['2T'][jenisKelamin]++;
-    //   }
-    // }
-
-    // kalo ada dua data baru diitung -> 2T
-    // kalo kosong2 terus -> T
-
-    if (now)
-      if (!prev1 && !now) {
+      // cek apakah keduanya turun/tetap
+      if (diffOne <= 0 && diffTwo <= 0) {
         summary['2T'][jenisKelamin]++;
-      } else if (!now) {
+      } else if (diffOne > 0) {
+        if (usia <= 5) {
+          if (diffOne >= reportEntity.rangeToBoundaries[usia]) {
+            summary['0-5'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 6 && usia <= 7) {
+          if (diffOne >= reportEntity.rangeToBoundaries['6-7']) {
+            summary['6-11'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 8 && usia <= 11) {
+          if (diffOne >= reportEntity.rangeToBoundaries['8-11']) {
+            summary['6-11'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 12 && usia <= 23) {
+          if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['12-23'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 24 && usia <= 35) {
+          if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['24-35'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        } else if (usia >= 36 && usia <= 59) {
+          if (diffOne >= reportEntity.rangeToBoundaries['12-60']) {
+            summary['36-59'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
+          } else {
+            summary['T'][jenisKelamin]++;
+          }
+        }
+      } else if (diffOne <= 0) {
         summary['T'][jenisKelamin]++;
-        console.log('tidak hadir');
-      } else {
-        difference = parseFloat((now - prev1).toFixed(2)) * 1000;
+      }
+    } else if (now !== null && prevOne !== null) {
+      const difference = parseFloat((now - prevOne).toFixed(2)) * 1000;
+      if (difference > 0) {
         if (usia <= 5) {
           if (difference >= reportEntity.rangeToBoundaries[usia]) {
             summary['0-5'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
           } else {
             summary['T'][jenisKelamin]++;
-            console.log('tidak naik berat badan');
           }
         } else if (usia >= 6 && usia <= 7) {
           if (difference >= reportEntity.rangeToBoundaries['6-7']) {
             summary['6-11'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
           } else {
             summary['T'][jenisKelamin]++;
-            console.log('tidak naik berat badan');
           }
         } else if (usia >= 8 && usia <= 11) {
           if (difference >= reportEntity.rangeToBoundaries['8-11']) {
             summary['6-11'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
           } else {
             summary['T'][jenisKelamin]++;
-            console.log('tidak naik berat badan');
           }
         } else if (usia >= 12 && usia <= 23) {
           if (difference >= reportEntity.rangeToBoundaries['12-60']) {
             summary['12-23'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
           } else {
             summary['T'][jenisKelamin]++;
-            console.log('tidak naik berat badan');
           }
         } else if (usia >= 24 && usia <= 35) {
           if (difference >= reportEntity.rangeToBoundaries['12-60']) {
             summary['24-35'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
           } else {
             summary['T'][jenisKelamin]++;
-            console.log('tidak naik berat badan');
           }
         } else if (usia >= 36 && usia <= 59) {
           if (difference >= reportEntity.rangeToBoundaries['12-60']) {
             summary['36-59'][jenisKelamin]++;
+            summary['total'][jenisKelamin]++;
           } else {
             summary['T'][jenisKelamin]++;
-            console.log('tidak naik berat badan');
           }
         }
+      } else {
+        summary['T'][jenisKelamin]++;
       }
+    } else if (now !== null) {
+      summary['T'][jenisKelamin]++;
+      summary['O'][jenisKelamin]++;
+    } else if (prevOne !== null) {
+      summary['T'][jenisKelamin]++;
+    } else {
+      summary['2T'][jenisKelamin]++;
+    }
+
+    // let difference = 0;
+    // if (!prevOne && !now) {
+    //   summary['2T'][jenisKelamin]++;
+    // } else if (!now) {
+    //   summary['T'][jenisKelamin]++;
+    // } else {
+    //   difference = parseFloat((now - prevOne).toFixed(2)) * 1000;
+    //   if (usia <= 5) {
+    //     if (difference >= reportEntity.rangeToBoundaries[usia]) {
+    //       summary['0-5'][jenisKelamin]++;
+    //     } else {
+    //       summary['T'][jenisKelamin]++;
+    //     }
+    //   } else if (usia >= 6 && usia <= 7) {
+    //     if (difference >= reportEntity.rangeToBoundaries['6-7']) {
+    //       summary['6-11'][jenisKelamin]++;
+    //     } else {
+    //       summary['T'][jenisKelamin]++;
+    //     }
+    //   } else if (usia >= 8 && usia <= 11) {
+    //     if (difference >= reportEntity.rangeToBoundaries['8-11']) {
+    //       summary['6-11'][jenisKelamin]++;
+    //     } else {
+    //       summary['T'][jenisKelamin]++;
+    //     }
+    //   } else if (usia >= 12 && usia <= 23) {
+    //     if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+    //       summary['12-23'][jenisKelamin]++;
+    //     } else {
+    //       summary['T'][jenisKelamin]++;
+    //     }
+    //   } else if (usia >= 24 && usia <= 35) {
+    //     if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+    //       summary['24-35'][jenisKelamin]++;
+    //     } else {
+    //       summary['T'][jenisKelamin]++;
+    //     }
+    //   } else if (usia >= 36 && usia <= 59) {
+    //     if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+    //       summary['36-59'][jenisKelamin]++;
+    //     } else {
+    //       summary['T'][jenisKelamin]++;
+    //     }
+    //   }
+    // }
   });
 
   count = Object.values(summary).flatMap((item) => [item.l, item.p]);
@@ -205,10 +247,80 @@ const commitJumlahBalitaNaik = (data, month) => {
 };
 
 const separateDataByGender = (data) => {
-  return [
-    pegundunganData.filter((row) => row.l === 'x'),
-    pegundunganData.filter((row) => row.p === 'x'),
-  ];
+  return [data.filter((row) => row.l === 'x'), data.filter((row) => row.p === 'x')];
+};
+
+const generateReport = async (year, month, data, subVillageStats) => {
+  const pegundunganData = data.filter((row) => row.alamat === 'Pegundungan');
+  const simparData = data.filter((row) => row.alamat === 'Simpar');
+  const srandilData = data.filter((row) => row.alamat === 'Srandil');
+
+  const workbook = new ExcelJS.Workbook();
+  const templatePath = path.join(__dirname, 'template.xlsx');
+
+  await workbook.xlsx.readFile(templatePath);
+  const worksheetOne = workbook.getWorksheet('Mentari I (L)');
+  const worksheetOneGirl = workbook.getWorksheet('Mentari I (P)');
+  const worksheetTwo = workbook.getWorksheet('Mentari II (L)');
+  const worksheetTwoGirl = workbook.getWorksheet('Mentari II (P)');
+  const worksheetThree = workbook.getWorksheet('Mentari III (L)');
+  const worksheetThreeGirl = workbook.getWorksheet('Mentari III (P)');
+  const worksheetFour = workbook.getWorksheet('Laporan Bulanan');
+
+  const headersSheetOne = getBBTBHeaders(worksheetOne);
+  const headersSheetTwo = getBBTBHeaders(worksheetTwo);
+  const headersSheetThree = getBBTBHeaders(worksheetThree);
+
+  const [cowoPegundungan, cewePegundungan] = separateDataByGender(pegundunganData);
+
+  const [cowoSimpar, ceweSimpar] = separateDataByGender(simparData);
+  const [cowoSrandil, ceweSrandil] = separateDataByGender(srandilData);
+
+  commitBBTBData(cowoPegundungan, worksheetOne, headersSheetOne);
+  commitBBTBData(cewePegundungan, worksheetOneGirl, headersSheetOne);
+  commitBBTBData(cowoSimpar, worksheetTwo, headersSheetTwo);
+  commitBBTBData(ceweSimpar, worksheetTwoGirl, headersSheetTwo);
+  commitBBTBData(cowoSrandil, worksheetThree, headersSheetThree);
+  commitBBTBData(ceweSrandil, worksheetThreeGirl, headersSheetThree);
+
+  commitJumlahBalita(subVillageStats['pegundungan'], worksheetFour, 29);
+  commitJumlahBalita(subVillageStats['simpar'], worksheetFour, 30);
+  commitJumlahBalita(subVillageStats['srandil'], worksheetFour, 31);
+
+  commitJumlahBalitaDitimbang(getRecordedChild(pegundunganData, month), worksheetFour, 29);
+  commitJumlahBalitaDitimbang(getRecordedChild(simparData, month), worksheetFour, 30);
+  commitJumlahBalitaDitimbang(getRecordedChild(srandilData, month), worksheetFour, 31);
+
+  const headersSheetFour = {};
+  worksheetFour.getRow(4).eachCell((cell, colNumber) => {
+    let value = cell.value.toLowerCase();
+    value = `${value}_${colNumber}`;
+    headersSheetFour[value] = colNumber;
+  });
+
+  const count = commitJumlahBalitaNaik(data, month - 1);
+  count.forEach((item, index) => {
+    const jenisKelamin = index % 2 === 0 ? 'l' : 'p';
+    worksheetFour.getCell(5, headersSheetFour[`${jenisKelamin}_${index + 1}`]).value = item;
+  });
+
+  const outputPath = '/tmp';
+
+  try {
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(outputPath, { recursive: true });
+    }
+
+    const filePath = path.join(
+      outputPath,
+      `TB BB ${reportEntity.monthCapital[month - 1]} Pegundungan ${year}.xlsx`
+    );
+    await workbook.xlsx.writeFile(filePath);
+    return filePath;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 };
 
 async function generateSummary(year) {
@@ -332,81 +444,6 @@ async function generateSummary(year) {
     return summary;
   });
 }
-
-const generateReport = async (year, month, data, subVillageStats) => {
-  const pegundunganData = data.filter((row) => row.alamat === 'Pegundungan');
-  const simparData = data.filter((row) => row.alamat === 'Simpar');
-  const srandilData = data.filter((row) => row.alamat === 'Srandil');
-
-  const workbook = new ExcelJS.Workbook();
-  const templatePath = path.join(__dirname, 'template.xlsx');
-  console.log(templatePath);
-
-  await workbook.xlsx.readFile(templatePath);
-  const worksheetOne = workbook.getWorksheet('Mentari I (L)');
-  const worksheetOneGirl = workbook.getWorksheet('Mentari I (P)');
-  const worksheetTwo = workbook.getWorksheet('Mentari II (L)');
-  const worksheetTwoGirl = workbook.getWorksheet('Mentari II (P)');
-  const worksheetThree = workbook.getWorksheet('Mentari III (L)');
-  const worksheetThreeGirl = workbook.getWorksheet('Mentari III (P)');
-  const worksheetFour = workbook.getWorksheet('Laporan Bulanan');
-
-  const headersSheetOne = getBBTBHeaders(worksheetOne);
-  const headersSheetTwo = getBBTBHeaders(worksheetTwo);
-  const headersSheetThree = getBBTBHeaders(worksheetThree);
-
-  const [cowoPegundungan, cewePegundungan] = separateDataByGender(pegundunganData);
-  const [cowoSimpar, ceweSimpar] = separateDataByGender(simparData);
-  const [cowoSrandil, ceweSrandil] = separateDataByGender(srandilData);
-
-  commitBBTBData(cowoPegundungan, worksheetOne, headersSheetOne);
-  commitBBTBData(cewePegundungan, worksheetOneGirl, headersSheetOne);
-
-  commitBBTBData(cowoSimpar, worksheetTwo, headersSheetTwo);
-  commitBBTBData(ceweSimpar, worksheetTwoGirl, headersSheetTwo);
-
-  commitBBTBData(cowoSrandil, worksheetThree, headersSheetThree);
-  commitBBTBData(ceweSrandil, worksheetThreeGirl, headersSheetThree);
-
-  commitJumlahBalita(subVillageStats['pegundungan'], worksheetFour, 29);
-  commitJumlahBalita(subVillageStats['simpar'], worksheetFour, 30);
-  commitJumlahBalita(subVillageStats['srandil'], worksheetFour, 31);
-
-  commitJumlahBalitaDitimbang(getRecordedChild(pegundunganData, month), worksheetFour, 29);
-  commitJumlahBalitaDitimbang(getRecordedChild(simparData, month), worksheetFour, 30);
-  commitJumlahBalitaDitimbang(getRecordedChild(srandilData, month), worksheetFour, 31);
-
-  const headersSheetFour = {};
-  worksheetFour.getRow(4).eachCell((cell, colNumber) => {
-    let value = cell.value.toLowerCase();
-    value = `${value}_${colNumber}`;
-    headersSheetFour[value] = colNumber;
-  });
-
-  const count = commitJumlahBalitaNaik(data, month - 1);
-  count.forEach((item, index) => {
-    const jenisKelamin = index % 2 === 0 ? 'l' : 'p';
-    worksheetFour.getCell(5, headersSheetFour[`${jenisKelamin}_${index + 1}`]).value = item;
-  });
-
-  const outputPath = '/tmp';
-
-  try {
-    if (!fs.existsSync(outputPath)) {
-      fs.mkdirSync(outputPath, { recursive: true });
-    }
-
-    const filePath = path.join(
-      outputPath,
-      `TB BB ${reportEntity.monthCapital[month - 1]} Pegundungan ${year}.xlsx`
-    );
-    await workbook.xlsx.writeFile(filePath);
-    return filePath;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
 
 const downloadReport = async (req, res) => {
   let year = req.query.year ? parseInt(req.query.year) : new Date().getFullYear();
