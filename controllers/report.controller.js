@@ -90,58 +90,58 @@ const commitJumlahBalitaNaik = (data, month) => {
 
     let difference = 0;
 
-    const differenceOne = now - prev1.toFixed(2);
-    const differenceTwo = prev1 - prev2.toFixed(2);
+    // const differenceOne = now - prev1?.toFixed(2);
+    // const differenceTwo = prev1 - prev2?.toFixed(2);
 
-    if (isEmpty && prevEmpty && prevTwoEmpty) {
-      summary['T'][jenisKelamin]++;
-    } else if (now) {
-      if (prevEmpty) {
-        summary['T'][jenisKelamin]++;
-      } else {
-        if (usia <= 5) {
-          if (difference >= reportEntity.rangeToBoundaries[usia]) {
-            summary['0-5'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 6 && usia <= 7) {
-          if (difference >= reportEntity.rangeToBoundaries['6-7']) {
-            summary['6-11'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 8 && usia <= 11) {
-          if (difference >= reportEntity.rangeToBoundaries['8-11']) {
-            summary['6-11'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 12 && usia <= 23) {
-          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['12-23'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 24 && usia <= 35) {
-          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['24-35'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        } else if (usia >= 36 && usia <= 59) {
-          if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-            summary['36-59'][jenisKelamin]++;
-          } else {
-            summary['T'][jenisKelamin]++;
-          }
-        }
-      }
-    } else {
-      if (differenceOne <= 0 && differenceTwo <= 0) {
-        summary['2T'][jenisKelamin]++;
-      }
-    }
+    // if (isEmpty && prevEmpty && prevTwoEmpty) {
+    //   summary['T'][jenisKelamin]++;
+    // } else if (now) {
+    //   if (prevEmpty) {
+    //     summary['T'][jenisKelamin]++;
+    //   } else {
+    //     if (usia <= 5) {
+    //       if (difference >= reportEntity.rangeToBoundaries[usia]) {
+    //         summary['0-5'][jenisKelamin]++;
+    //       } else {
+    //         summary['T'][jenisKelamin]++;
+    //       }
+    //     } else if (usia >= 6 && usia <= 7) {
+    //       if (difference >= reportEntity.rangeToBoundaries['6-7']) {
+    //         summary['6-11'][jenisKelamin]++;
+    //       } else {
+    //         summary['T'][jenisKelamin]++;
+    //       }
+    //     } else if (usia >= 8 && usia <= 11) {
+    //       if (difference >= reportEntity.rangeToBoundaries['8-11']) {
+    //         summary['6-11'][jenisKelamin]++;
+    //       } else {
+    //         summary['T'][jenisKelamin]++;
+    //       }
+    //     } else if (usia >= 12 && usia <= 23) {
+    //       if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+    //         summary['12-23'][jenisKelamin]++;
+    //       } else {
+    //         summary['T'][jenisKelamin]++;
+    //       }
+    //     } else if (usia >= 24 && usia <= 35) {
+    //       if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+    //         summary['24-35'][jenisKelamin]++;
+    //       } else {
+    //         summary['T'][jenisKelamin]++;
+    //       }
+    //     } else if (usia >= 36 && usia <= 59) {
+    //       if (difference >= reportEntity.rangeToBoundaries['12-60']) {
+    //         summary['36-59'][jenisKelamin]++;
+    //       } else {
+    //         summary['T'][jenisKelamin]++;
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   if (differenceOne <= 0 && differenceTwo <= 0) {
+    //     summary['2T'][jenisKelamin]++;
+    //   }
+    // }
 
     // kalo ada dua data baru diitung -> 2T
     // kalo kosong2 terus -> T
@@ -202,6 +202,13 @@ const commitJumlahBalitaNaik = (data, month) => {
 
   count = Object.values(summary).flatMap((item) => [item.l, item.p]);
   return count;
+};
+
+const separateDataByGender = (data) => {
+  return [
+    pegundunganData.filter((row) => row.l === 'x'),
+    pegundunganData.filter((row) => row.p === 'x'),
+  ];
 };
 
 async function generateSummary(year) {
@@ -336,18 +343,30 @@ const generateReport = async (year, month, data, subVillageStats) => {
   console.log(templatePath);
 
   await workbook.xlsx.readFile(templatePath);
-  const worksheetOne = workbook.getWorksheet('Mentari I');
-  const worksheetTwo = workbook.getWorksheet('Mentari II');
-  const worksheetThree = workbook.getWorksheet('Mentari III');
+  const worksheetOne = workbook.getWorksheet('Mentari I (L)');
+  const worksheetOneGirl = workbook.getWorksheet('Mentari I (P)');
+  const worksheetTwo = workbook.getWorksheet('Mentari II (L)');
+  const worksheetTwoGirl = workbook.getWorksheet('Mentari II (P)');
+  const worksheetThree = workbook.getWorksheet('Mentari III (L)');
+  const worksheetThreeGirl = workbook.getWorksheet('Mentari III (P)');
   const worksheetFour = workbook.getWorksheet('Laporan Bulanan');
 
   const headersSheetOne = getBBTBHeaders(worksheetOne);
   const headersSheetTwo = getBBTBHeaders(worksheetTwo);
   const headersSheetThree = getBBTBHeaders(worksheetThree);
 
-  commitBBTBData(pegundunganData, worksheetOne, headersSheetOne);
-  commitBBTBData(simparData, worksheetTwo, headersSheetTwo);
-  commitBBTBData(srandilData, worksheetThree, headersSheetThree);
+  const [cowoPegundungan, cewePegundungan] = separateDataByGender(pegundunganData);
+  const [cowoSimpar, ceweSimpar] = separateDataByGender(simparData);
+  const [cowoSrandil, ceweSrandil] = separateDataByGender(srandilData);
+
+  commitBBTBData(cowoPegundungan, worksheetOne, headersSheetOne);
+  commitBBTBData(cewePegundungan, worksheetOneGirl, headersSheetOne);
+
+  commitBBTBData(cowoSimpar, worksheetTwo, headersSheetTwo);
+  commitBBTBData(ceweSimpar, worksheetTwoGirl, headersSheetTwo);
+
+  commitBBTBData(cowoSrandil, worksheetThree, headersSheetThree);
+  commitBBTBData(ceweSrandil, worksheetThreeGirl, headersSheetThree);
 
   commitJumlahBalita(subVillageStats['pegundungan'], worksheetFour, 29);
   commitJumlahBalita(subVillageStats['simpar'], worksheetFour, 30);
