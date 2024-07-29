@@ -8,6 +8,7 @@ router.get('/grouped', recordController.getGroupedRecordDateList);
 router.get('/:id', recordController.getRecord);
 router.get('/child/:id', recordController.getRecordsByChildId);
 router.put('/:id', recordController.updateRecord);
-router.post('/', recordController.createRecord);  
+router.delete('/:id', recordController.deleteRecord);
+router.post('/', recordController.createRecord);
 
 module.exports = router;

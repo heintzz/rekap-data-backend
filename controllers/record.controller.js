@@ -339,6 +339,26 @@ const getRecord = async (req, res) => {
   }
 };
 
+const deleteRecord = async (req, res) => {
+  const recordId = req.params.id;
+
+  try {
+    const record = await Record.findById(recordId);
+    if (!record) {
+      return res.status(404).json({ success: false, message: 'Pemeriksaan tidak ditemukan' });
+    }
+
+    await Record.deleteOne({ _id: recordId });
+
+    res.status(200).json({
+      success: true,
+      message: 'Data pemeriksaan berhasil dihapus',
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const recordController = {
   getRecord,
   getRecords,
@@ -346,6 +366,7 @@ const recordController = {
   getRecordsByChildId,
   createRecord,
   updateRecord,
+  deleteRecord,
 };
 
 module.exports = recordController;
