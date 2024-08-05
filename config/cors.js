@@ -1,6 +1,7 @@
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
+  'https://situnting.vercel.app',
   'https://situnting-pegundungan.vercel.app',
 ];
 
