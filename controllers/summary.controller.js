@@ -20,11 +20,10 @@ const getSummaries = async (req, res) => {
       .countDocuments()
       .exec();
 
-    const pemeriksaanBurukLength = await Record.find({
-      $or: [{ statusGizi: 'Gizi buruk' }, { statusGizi: 'Gizi kurang' }],
-    })
-      .countDocuments()
-      .exec();
+    const pemeriksaan = await Record.find();
+    const pemeriksaanBurukLength = pemeriksaan.filter(
+      (item) => item.status['bb/tb'] === 'Gizi buruk' || item.status['bb/tb'] === 'Gizi kurang'
+    ).length;
 
     const summary = {
       countChild: childLength,
