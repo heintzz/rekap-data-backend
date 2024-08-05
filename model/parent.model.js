@@ -6,7 +6,7 @@ const parentSchema = new Schema({
     type: String,
     required: true,
   },
-  noKk: {
+  nik: {
     type: String,
     required: true,
   },

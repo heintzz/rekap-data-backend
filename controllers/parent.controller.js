@@ -22,9 +22,9 @@ const getParentsList = async (req, res) => {
 };
 
 const addParentData = async (req, res) => {
-  const { nama, noKk, dusun, rt, rw } = req.body;
+  const { nama, nik, dusun, rt, rw } = req.body;
 
-  const existingParent = await Parent.findOne({ noKk }).exec();
+  const existingParent = await Parent.findOne({ nik }).exec();
 
   if (existingParent) {
     return res.status(400).json({
@@ -36,7 +36,7 @@ const addParentData = async (req, res) => {
   try {
     const parent = await Parent.create({
       nama,
-      noKk,
+      nik,
       alamat: {
         dusun,
         rt,
