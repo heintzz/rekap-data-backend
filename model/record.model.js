@@ -34,6 +34,8 @@ const recordSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  lingkarKepala: Number,
+  lingkarLengan: Number,
   vitaminA: {
     type: Boolean,
   },

@@ -5,14 +5,14 @@ const reportEntity = require('../entities/report');
 const fs = require('fs');
 const { getChildSummary, getRecordedChild } = require('../entities/child.js');
 
-const getBBTBHeaders = (worksheet) => {
+const getDataHeaders = (worksheet) => {
   const headers = {};
   let monthCount = 0;
   worksheet.getRow(9).eachCell((cell, colNumber) => {
     let value = cell.value.toLowerCase();
-    if (cell.value === 'BB' || cell.value === 'TB') {
+    if (cell.value === 'BB' || cell.value === 'TB' || cell.value === 'LL' || cell.value === 'LK') {
       value = `${value}_${reportEntity.monthWithPrev[monthCount]}`;
-      if ((colNumber + 1) % 2 == 0) {
+      if ((colNumber + 1) % 4 == 0) {
         monthCount++;
       }
     }
@@ -30,10 +30,12 @@ const getBBTBHeaders = (worksheet) => {
   return headers;
 };
 
-const commitBBTBData = (data, worksheet, headers) => {
+const commitChildRecords = (data, worksheet, headers) => {
+  console.log(data);
   data.forEach((row, rowIndex) => {
     const excelRow = worksheet.getRow(rowIndex + 10);
     for (const [key, value] of Object.entries(row)) {
+      console.log({ key, value });
       if (headers[key] !== undefined) {
         excelRow.getCell(headers[key]).value = value;
       }
@@ -194,52 +196,6 @@ const commitJumlahBalitaNaik = (data, month) => {
         summary['2T'][jenisKelamin]++;
       }
     }
-
-    // let difference = 0;
-    // if (!prevOne && !now) {
-    //   summary['2T'][jenisKelamin]++;
-    // } else if (!now) {
-    //   summary['T'][jenisKelamin]++;
-    // } else {
-    //   difference = parseFloat((now - prevOne).toFixed(2)) * 1000;
-    //   if (usia <= 5) {
-    //     if (difference >= reportEntity.rangeToBoundaries[usia]) {
-    //       summary['0-5'][jenisKelamin]++;
-    //     } else {
-    //       summary['T'][jenisKelamin]++;
-    //     }
-    //   } else if (usia >= 6 && usia <= 7) {
-    //     if (difference >= reportEntity.rangeToBoundaries['6-7']) {
-    //       summary['6-11'][jenisKelamin]++;
-    //     } else {
-    //       summary['T'][jenisKelamin]++;
-    //     }
-    //   } else if (usia >= 8 && usia <= 11) {
-    //     if (difference >= reportEntity.rangeToBoundaries['8-11']) {
-    //       summary['6-11'][jenisKelamin]++;
-    //     } else {
-    //       summary['T'][jenisKelamin]++;
-    //     }
-    //   } else if (usia >= 12 && usia <= 23) {
-    //     if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-    //       summary['12-23'][jenisKelamin]++;
-    //     } else {
-    //       summary['T'][jenisKelamin]++;
-    //     }
-    //   } else if (usia >= 24 && usia <= 35) {
-    //     if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-    //       summary['24-35'][jenisKelamin]++;
-    //     } else {
-    //       summary['T'][jenisKelamin]++;
-    //     }
-    //   } else if (usia >= 36 && usia <= 59) {
-    //     if (difference >= reportEntity.rangeToBoundaries['12-60']) {
-    //       summary['36-59'][jenisKelamin]++;
-    //     } else {
-    //       summary['T'][jenisKelamin]++;
-    //     }
-    //   }
-    // }
   });
 
   count = Object.values(summary).flatMap((item) => [item.l, item.p]);
@@ -267,21 +223,23 @@ const generateReport = async (year, month, data, subVillageStats) => {
   const worksheetThreeGirl = workbook.getWorksheet('Mentari III (P)');
   const worksheetFour = workbook.getWorksheet('Laporan Bulanan');
 
-  const headersSheetOne = getBBTBHeaders(worksheetOne);
-  const headersSheetTwo = getBBTBHeaders(worksheetTwo);
-  const headersSheetThree = getBBTBHeaders(worksheetThree);
+  const headersSheetOne = getDataHeaders(worksheetOne);
+  const headersSheetTwo = getDataHeaders(worksheetTwo);
+  const headersSheetThree = getDataHeaders(worksheetThree);
+
+  console.log(headersSheetOne);
 
   const [cowoPegundungan, cewePegundungan] = separateDataByGender(pegundunganData);
 
   const [cowoSimpar, ceweSimpar] = separateDataByGender(simparData);
   const [cowoSrandil, ceweSrandil] = separateDataByGender(srandilData);
 
-  commitBBTBData(cowoPegundungan, worksheetOne, headersSheetOne);
-  commitBBTBData(cewePegundungan, worksheetOneGirl, headersSheetOne);
-  commitBBTBData(cowoSimpar, worksheetTwo, headersSheetTwo);
-  commitBBTBData(ceweSimpar, worksheetTwoGirl, headersSheetTwo);
-  commitBBTBData(cowoSrandil, worksheetThree, headersSheetThree);
-  commitBBTBData(ceweSrandil, worksheetThreeGirl, headersSheetThree);
+  commitChildRecords(cowoPegundungan, worksheetOne, headersSheetOne);
+  commitChildRecords(cewePegundungan, worksheetOneGirl, headersSheetOne);
+  commitChildRecords(cowoSimpar, worksheetTwo, headersSheetTwo);
+  commitChildRecords(ceweSimpar, worksheetTwoGirl, headersSheetTwo);
+  commitChildRecords(cowoSrandil, worksheetThree, headersSheetThree);
+  commitChildRecords(ceweSrandil, worksheetThreeGirl, headersSheetThree);
 
   commitJumlahBalita(subVillageStats['pegundungan'], worksheetFour, 29);
   commitJumlahBalita(subVillageStats['simpar'], worksheetFour, 30);
@@ -367,6 +325,8 @@ async function generateSummary(year, bulan) {
         beratBadan: { $first: '$beratBadan' },
         tinggiBadan: { $first: '$tinggiBadan' },
         pertamaKali: { $first: '$pertamaKali' },
+        lingkarKepala: { $first: '$lingkarKepala' },
+        lingkarLengan: { $first: '$lingkarLengan' },
       },
     },
     {
@@ -381,6 +341,8 @@ async function generateSummary(year, bulan) {
             beratBadan: '$beratBadan',
             tinggiBadan: '$tinggiBadan',
             pertamaKali: '$pertamaKali',
+            lingkarKepala: '$lingkarKepala',
+            lingkarLengan: '$lingkarLengan',
           },
         },
       },
@@ -438,6 +400,12 @@ async function generateSummary(year, bulan) {
       const monthName = reportEntity.monthNames[month];
       summary[`bb_${monthName}`] = parseFloat(data.beratBadan).toFixed(1);
       summary[`tb_${monthName}`] = parseFloat(data.tinggiBadan).toFixed(1);
+      summary[`lk_${monthName}`] = data.lingkarKepala
+        ? parseFloat(data.lingkarKepala).toFixed(1)
+        : null;
+      summary[`ll_${monthName}`] = data.lingkarLengan
+        ? parseFloat(data.lingkarLengan).toFixed(1)
+        : null;
     });
 
     const firstTime = child.monthlyData.filter((data) => data.month === bulan)[0]?.pertamaKali;
@@ -453,6 +421,7 @@ const downloadReport = async (req, res) => {
 
   try {
     const summary = await generateSummary(year, month);
+
     const childSummary = await getChildSummary();
     const filePath = await generateReport(year, month, summary, childSummary);
 
