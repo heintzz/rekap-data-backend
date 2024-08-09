@@ -53,7 +53,7 @@ const commitJumlahBalita = (subVillageStats, worksheet, row) => {
 const commitJumlahBalitaDitimbang = (subVillageStats, worksheet, row) => {
   const data = Object.values(subVillageStats).flatMap((item) => [item.l, item.p]);
   data.map((item, index) => {
-    worksheet.getCell(row, index + 14).value = item;
+    worksheet.getCell(row, index + 15).value = item;
   });
 };
 
@@ -226,7 +226,6 @@ const generateReport = async (year, month, data, subVillageStats) => {
   const headersSheetThree = getDataHeaders(worksheetThree);
 
   const [cowoPegundungan, cewePegundungan] = separateDataByGender(pegundunganData);
-
   const [cowoSimpar, ceweSimpar] = separateDataByGender(simparData);
   const [cowoSrandil, ceweSrandil] = separateDataByGender(srandilData);
 
@@ -241,9 +240,9 @@ const generateReport = async (year, month, data, subVillageStats) => {
   commitJumlahBalita(subVillageStats['simpar'], worksheetFour, 30);
   commitJumlahBalita(subVillageStats['srandil'], worksheetFour, 31);
 
-  commitJumlahBalitaDitimbang(getRecordedChild(pegundunganData, month), worksheetFour, 29);
-  commitJumlahBalitaDitimbang(getRecordedChild(simparData, month), worksheetFour, 30);
-  commitJumlahBalitaDitimbang(getRecordedChild(srandilData, month), worksheetFour, 31);
+  commitJumlahBalitaDitimbang(getRecordedChild(pegundunganData, year, month), worksheetFour, 29);
+  commitJumlahBalitaDitimbang(getRecordedChild(simparData, year, month), worksheetFour, 30);
+  commitJumlahBalitaDitimbang(getRecordedChild(srandilData, year, month), worksheetFour, 31);
 
   const headersSheetFour = {};
   worksheetFour.getRow(4).eachCell((cell, colNumber) => {
@@ -360,13 +359,16 @@ async function generateSummary(year, bulan) {
             {
               $multiply: [
                 {
-                  $subtract: [{ $year: new Date() }, { $year: '$infoAnak.tanggalLahir' }],
+                  $subtract: [
+                    { $year: new Date(year, bulan) },
+                    { $year: '$infoAnak.tanggalLahir' },
+                  ],
                 },
                 12,
               ],
             },
             {
-              $subtract: [{ $month: new Date() }, { $month: '$infoAnak.tanggalLahir' }],
+              $subtract: [{ $month: new Date(year, bulan) }, { $month: '$infoAnak.tanggalLahir' }],
             },
           ],
         },
@@ -393,15 +395,17 @@ async function generateSummary(year, bulan) {
 
     child.monthlyData.forEach((data) => {
       const month = data.month === 12 ? (data.year === year ? 12 : 0) : data.month;
-      const monthName = reportEntity.monthNames[month];
-      summary[`bb_${monthName}`] = parseFloat(data.beratBadan).toFixed(1);
-      summary[`tb_${monthName}`] = parseFloat(data.tinggiBadan).toFixed(1);
-      summary[`lk_${monthName}`] = data.lingkarKepala
-        ? parseFloat(data.lingkarKepala).toFixed(1)
-        : null;
-      summary[`ll_${monthName}`] = data.lingkarLengan
-        ? parseFloat(data.lingkarLengan).toFixed(1)
-        : null;
+      if (month <= bulan) {
+        const monthName = reportEntity.monthNames[month];
+        summary[`bb_${monthName}`] = parseFloat(data.beratBadan).toFixed(1);
+        summary[`tb_${monthName}`] = parseFloat(data.tinggiBadan).toFixed(1);
+        summary[`lk_${monthName}`] = data.lingkarKepala
+          ? parseFloat(data.lingkarKepala).toFixed(1)
+          : null;
+        summary[`ll_${monthName}`] = data.lingkarLengan
+          ? parseFloat(data.lingkarLengan).toFixed(1)
+          : null;
+      }
     });
 
     const firstTime = child.monthlyData.filter((data) => data.month === bulan)[0]?.pertamaKali;
@@ -417,7 +421,7 @@ const downloadReport = async (req, res) => {
 
   try {
     const summary = await generateSummary(year, month);
-    const childSummary = await getChildSummary();
+    const childSummary = await getChildSummary(year, month);
     const filePath = await generateReport(year, month, summary, childSummary);
 
     if (!filePath) {

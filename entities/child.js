@@ -1,8 +1,8 @@
 const Child = require('../model/child.model');
 const { monthNames } = require('./report');
 
-const calculateAgeInMonths = (birthDate) => {
-  const today = new Date();
+const calculateAgeInMonths = (birthDate, year, month) => {
+  const today = new Date(year, month);
   const birth = new Date(birthDate);
   let ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12;
   ageInMonths -= birth.getMonth();
@@ -10,7 +10,7 @@ const calculateAgeInMonths = (birthDate) => {
   return ageInMonths;
 };
 
-const getSubVillageSummary = (data, dusun) => {
+const getSubVillageSummary = (data, dusun, year, month) => {
   const children = data.filter((child) => child.alamat.dusun === dusun);
   const childSummary = {
     '0-5': {
@@ -40,7 +40,7 @@ const getSubVillageSummary = (data, dusun) => {
   };
 
   children.forEach((child) => {
-    const ageInMonths = calculateAgeInMonths(child.tanggalLahir);
+    const ageInMonths = calculateAgeInMonths(child.tanggalLahir, year, month);
     childSummary.total[child.jenisKelamin.toLowerCase()]++;
     if (ageInMonths >= 0 && ageInMonths <= 5) {
       if (child.jenisKelamin === 'L') {
@@ -78,12 +78,12 @@ const getSubVillageSummary = (data, dusun) => {
   return childSummary;
 };
 
-const getChildSummary = async (req, res) => {
+const getChildSummary = async (year, month) => {
   try {
     const children = await Child.find();
-    const pegundunganSummary = getSubVillageSummary(children, 'Pegundungan');
-    const simparSummary = getSubVillageSummary(children, 'Simpar');
-    const srandilSummary = getSubVillageSummary(children, 'Srandil');
+    const pegundunganSummary = getSubVillageSummary(children, 'Pegundungan', year, month);
+    const simparSummary = getSubVillageSummary(children, 'Simpar', year, month);
+    const srandilSummary = getSubVillageSummary(children, 'Srandil', year, month);
     const childSummary = {
       pegundungan: pegundunganSummary,
       simpar: simparSummary,
@@ -96,7 +96,7 @@ const getChildSummary = async (req, res) => {
   }
 };
 
-const getRecordedChild = (data, month) => {
+const getRecordedChild = (data, year, month) => {
   const childSummary = {
     '0-5': {
       l: 0,
@@ -131,7 +131,9 @@ const getRecordedChild = (data, month) => {
   }
 
   filteredData.forEach((child) => {
-    const ageInMonths = child.usia;
+    const [day, month, year] = child.tanggalLahir.split('/');
+    const dateObject = new Date(year, month, day);
+    const ageInMonths = calculateAgeInMonths(dateObject, year, month);
     const jenisKelamin = child.l === 'x' ? 'l' : 'p';
     childSummary.total[jenisKelamin]++;
     if (ageInMonths >= 0 && ageInMonths <= 5) {
