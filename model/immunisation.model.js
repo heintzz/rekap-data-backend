@@ -6,6 +6,10 @@ const immunisationSchema = new Schema({
     type: String,
     required: true,
   },
+  jenisKelamin: {
+    type: String,
+    required: true,
+  },
   imunisasi: Array,
 });
 

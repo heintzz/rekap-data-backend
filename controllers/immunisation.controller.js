@@ -6,7 +6,7 @@ const createOrUpdate = async (req, res) => {
   try {
     const doc = await Immunisation.findOneAndUpdate(
       { idAnak: id },
-      { imunisasi: [...req.body.imunisasi] },
+      { imunisasi: [...req.body.imunisasi], jenisKelamin: req.body.jenisKelamin },
       { upsert: true, new: true }
     );
 

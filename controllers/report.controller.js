@@ -3,7 +3,11 @@ const path = require('path');
 const ExcelJS = require('exceljs');
 const reportEntity = require('../entities/report');
 const fs = require('fs');
-const { getChildSummary, getRecordedChild } = require('../entities/child.js');
+const {
+  getChildSummary,
+  getRecordedChild,
+  getImmunisationSummary,
+} = require('../entities/child.js');
 
 const getDataHeaders = (worksheet) => {
   const headers = {};
@@ -43,17 +47,24 @@ const commitChildRecords = (data, worksheet, headers) => {
   });
 };
 
-const commitJumlahBalita = (subVillageStats, worksheet, row) => {
-  const data = Object.values(subVillageStats).flatMap((item) => [item.l, item.p]);
+const commitJumlahBalita = (dataDusun, worksheet, row) => {
+  const data = Object.values(dataDusun).flatMap((item) => [item.l, item.p]);
   data.map((item, index) => {
     worksheet.getCell(row, index + 2).value = item;
   });
 };
 
-const commitJumlahBalitaDitimbang = (subVillageStats, worksheet, row) => {
-  const data = Object.values(subVillageStats).flatMap((item) => [item.l, item.p]);
+const commitJumlahBalitaDitimbang = (dataDusun, worksheet, row) => {
+  const data = Object.values(dataDusun).flatMap((item) => [item.l, item.p]);
   data.map((item, index) => {
     worksheet.getCell(row, index + 15).value = item;
+  });
+};
+
+const commitStatistikImunisasi = (dataImunisasi, worksheet, row) => {
+  const data = Object.values(dataImunisasi).flatMap((item) => [item.l, item.p, item.total]);
+  data.map((item, index) => {
+    worksheet.getCell(row, index + 1).value = item;
   });
 };
 
@@ -204,7 +215,7 @@ const separateDataByGender = (data) => {
   return [data.filter((row) => row.l === 'x'), data.filter((row) => row.p === 'x')];
 };
 
-const generateReport = async (year, month, data, subVillageStats) => {
+const generateReport = async (year, month, data, dataDusun, dataImunisasi) => {
   const pegundunganData = data.filter((row) => row.alamat === 'Pegundungan');
   const simparData = data.filter((row) => row.alamat === 'Simpar');
   const srandilData = data.filter((row) => row.alamat === 'Srandil');
@@ -236,13 +247,15 @@ const generateReport = async (year, month, data, subVillageStats) => {
   commitChildRecords(cowoSrandil, worksheetThree, headersSheetThree);
   commitChildRecords(ceweSrandil, worksheetThreeGirl, headersSheetThree);
 
-  commitJumlahBalita(subVillageStats['pegundungan'], worksheetFour, 29);
-  commitJumlahBalita(subVillageStats['simpar'], worksheetFour, 30);
-  commitJumlahBalita(subVillageStats['srandil'], worksheetFour, 31);
+  commitJumlahBalita(dataDusun['pegundungan'], worksheetFour, 29);
+  commitJumlahBalita(dataDusun['simpar'], worksheetFour, 30);
+  commitJumlahBalita(dataDusun['srandil'], worksheetFour, 31);
 
   commitJumlahBalitaDitimbang(getRecordedChild(pegundunganData, year, month), worksheetFour, 29);
   commitJumlahBalitaDitimbang(getRecordedChild(simparData, year, month), worksheetFour, 30);
   commitJumlahBalitaDitimbang(getRecordedChild(srandilData, year, month), worksheetFour, 31);
+
+  commitStatistikImunisasi(dataImunisasi, worksheetFour, 43);
 
   const headersSheetFour = {};
   worksheetFour.getRow(4).eachCell((cell, colNumber) => {
@@ -422,7 +435,8 @@ const downloadReport = async (req, res) => {
   try {
     const summary = await generateSummary(year, month);
     const childSummary = await getChildSummary(year, month);
-    const filePath = await generateReport(year, month, summary, childSummary);
+    const immunisationSummary = await getImmunisationSummary(year, month);
+    const filePath = await generateReport(year, month, summary, childSummary, immunisationSummary);
 
     if (!filePath) {
       return res.status(500).json({

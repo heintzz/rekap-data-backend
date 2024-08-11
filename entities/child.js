@@ -1,4 +1,5 @@
 const Child = require('../model/child.model');
+const Immunisation = require('../model/immunisation.model');
 const { monthNames } = require('./report');
 
 const calculateAgeInMonths = (birthDate, year, month) => {
@@ -152,7 +153,56 @@ const getRecordedChild = (data, year, month) => {
   return childSummary;
 };
 
+const immunisationTypes = [
+  'HB0',
+  'BCG',
+  'Polio 1',
+  'DPT-Hb-Hib 1',
+  'Polio 2',
+  'PCV 1',
+  'Rotavirus 1',
+  'DPT-Hb-Hib 2',
+  'Polio 3',
+  'PCV 2',
+  'Rotavirus 2',
+  'DPT-Hb-Hib 3',
+  'Polio 4',
+  'IPV',
+  'Rotavirus 3',
+  'MR',
+  'IPV 2',
+  'PCV 3',
+  'Booster DPT-Hb-Hib',
+  'Booster MR',
+];
+
+const getImmunisationSummary = async (year, month) => {
+  console.log(month);
+  const result = {};
+  immunisationTypes.forEach((field) => {
+    result[field] = { l: 0, p: 0, total: 0 };
+  });
+
+  const immunisation = await Immunisation.find();
+
+  immunisation.forEach((immunisation) => {
+    let jenisKelamin = immunisation.jenisKelamin.toLowerCase();
+    immunisation.imunisasi.forEach((item) => {
+      const name = item.name.split('_')[0];
+      const date = new Date(item.date);
+      const [tahun, bulan] = [date.getFullYear(), date.getMonth()];
+      if (year === tahun && month === bulan + 1) {
+        result[name][jenisKelamin]++;
+        result[name].total++;
+      }
+    });
+  });
+
+  return result;
+};
+
 module.exports = {
   getChildSummary,
   getRecordedChild,
+  getImmunisationSummary,
 };
