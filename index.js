@@ -24,6 +24,7 @@ app.use('/children', require('./routes/child.route.js'));
 app.use('/records', require('./routes/record.route.js'));
 app.use('/reports', require('./routes/report.route.js'));
 app.use('/summary', require('./routes/summary.route.js'));
+app.use('/immunisation', require('./routes/immunisation.route.js'));
 
 mongoose.connection.on('connected', () => {
   console.log('Mongoose connected to db');
