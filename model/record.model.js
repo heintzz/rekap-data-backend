@@ -64,6 +64,9 @@ const recordSchema = new mongoose.Schema({
       },
     },
   },
+  statusPerkembangan: {
+    type: mongoose.Mixed,
+  },
   imunisasi: {
     type: Array,
     required: false,
