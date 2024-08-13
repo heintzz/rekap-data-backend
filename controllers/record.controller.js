@@ -1,4 +1,5 @@
 const data = require('../data');
+const reportEntity = require('../entities/report');
 const Record = require('../model/record.model');
 
 const weightOverAgeEnum = {
@@ -144,15 +145,87 @@ const inferNutritionStatus = (usia, beratBadan, tinggiBadan, jenisKelamin) => {
   return status;
 };
 
+const isBelowTheThreshold = (usia, selisih) => {
+  return (
+    (usia <= 5 && selisih < reportEntity.rangeToBoundaries[usia]) ||
+    (usia >= 6 && usia <= 7 && selisih < reportEntity.rangeToBoundaries['6-7']) ||
+    (usia >= 8 && usia <= 11 && selisih < reportEntity.rangeToBoundaries['8-11']) ||
+    (usia >= 12 && usia <= 23 && selisih < reportEntity.rangeToBoundaries['12-60']) ||
+    (usia >= 24 && usia <= 35 && selisih < reportEntity.rangeToBoundaries['12-60']) ||
+    (usia >= 36 && usia <= 59 && selisih < reportEntity.rangeToBoundaries['12-60'])
+  );
+};
+
+const inferDataStatus = async (idAnak, usia, pertamaKali, beratBadan, tanggalPemeriksaan) => {
+  const recordDate = new Date(tanggalPemeriksaan);
+  const record = await Record.find({
+    idAnak: idAnak,
+  });
+
+  const arrayOfWeight = [beratBadan, null, null];
+
+  record.forEach((record) => {
+    const tanggalPencatatan = new Date(record.tanggalPencatatan);
+    const month = tanggalPencatatan.getMonth();
+    const bulanPemeriksaan = recordDate.getMonth();
+    const selisih = bulanPemeriksaan - month;
+    if (
+      tanggalPencatatan.getFullYear() === recordDate.getFullYear() &&
+      tanggalPencatatan < recordDate &&
+      (selisih > 0) & (selisih <= 2)
+    ) {
+      arrayOfWeight[selisih] = record.beratBadan;
+    }
+  });
+
+  const [now, prevOne, prevTwo] = arrayOfWeight;
+
+  if (pertamaKali) return 'B';
+  else {
+    if (now !== null && prevOne !== null && prevTwo !== null) {
+      const diffOne = parseFloat((now - prevOne).toFixed(2)) * 1000;
+      const diffTwo = parseFloat((prevOne - prevTwo).toFixed(2)) * 1000;
+      if (isBelowTheThreshold(usia, diffOne) && isBelowTheThreshold(usia - 1, diffTwo)) {
+        return '2T';
+      } else if (diffOne > 0) {
+        if (isBelowTheThreshold(usia, diffOne)) return 'T';
+        else return 'N';
+      } else if (diffOne <= 0) {
+        return 'T';
+      }
+    } else if (now !== null && prevOne !== null) {
+      const difference = parseFloat((now - prevOne).toFixed(2)) * 1000;
+      if (isBelowTheThreshold(usia, difference)) return 'T';
+      else return 'N';
+    } else if (now !== null) {
+      return 'O,T';
+    } else if (prevOne !== null) {
+      return 'T';
+    } else {
+      return '2T';
+    }
+  }
+};
+
 const createRecord = async (req, res) => {
-  const { usia, beratBadan, jenisKelamin, tinggiBadan } = req.body;
+  const { usia, beratBadan, jenisKelamin, tinggiBadan, idAnak, pertamaKali, tanggalPencatatan } =
+    req.body;
+  console.log(tanggalPencatatan);
 
   const status = inferNutritionStatus(usia, beratBadan, tinggiBadan, jenisKelamin);
+  const statusPerkembangan = await inferDataStatus(
+    idAnak,
+    usia,
+    pertamaKali,
+    beratBadan,
+    tanggalPencatatan
+  );
 
   try {
     const record = await Record.create({
       ...req.body,
       status,
+      statusPerkembangan,
     });
     res.status(200).json({
       success: true,
@@ -165,6 +238,7 @@ const createRecord = async (req, res) => {
 
 const updateRecord = async (req, res) => {
   const recordId = req.params.id;
+  const { idAnak, usia, pertamaKali, beratBadan, tanggalPencatatan } = req.body;
 
   try {
     const record = await Record.findById(recordId);
@@ -185,7 +259,16 @@ const updateRecord = async (req, res) => {
       req.body?.jenisKelamin ? req.body.jenisKelamin : updatedRecord.jenisKelamin
     );
 
+    const newStatusPerkembangan = await inferDataStatus(
+      idAnak,
+      req.body?.usia ? req.body.usia : updatedRecord.usia,
+      req.body?.pertamaKali ? req.body.pertamaKali : updatedRecord.pertamaKali,
+      req.body?.beratBadan ? req.body.beratBadan : updatedRecord.beratBadan,
+      req.body?.tanggalPencatatan ? req.body.tanggalPencatatan : updatedRecord.tanggalPencatatan
+    );
+
     updatedRecord.status = newStatus;
+    updatedRecord.statusPerkembangan = newStatusPerkembangan;
 
     await updatedRecord.save();
 

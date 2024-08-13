@@ -157,27 +157,26 @@ const immunisationTypes = [
   'HB0',
   'BCG',
   'Polio 1',
-  'DPT-Hb-Hib 1',
+  'DPT-HB-Hib 1',
   'Polio 2',
   'PCV 1',
   'Rotavirus 1',
-  'DPT-Hb-Hib 2',
+  'DPT-HB-Hib 2',
   'Polio 3',
   'PCV 2',
   'Rotavirus 2',
-  'DPT-Hb-Hib 3',
+  'DPT-HB-Hib 3',
   'Polio 4',
   'IPV',
   'Rotavirus 3',
   'MR',
   'IPV 2',
   'PCV 3',
-  'Booster DPT-Hb-Hib',
+  'Booster DPT-HBS-Hib',
   'Booster MR',
 ];
 
 const getImmunisationSummary = async (year, month) => {
-  console.log(month);
   const result = {};
   immunisationTypes.forEach((field) => {
     result[field] = { l: 0, p: 0, total: 0 };
@@ -189,7 +188,7 @@ const getImmunisationSummary = async (year, month) => {
     let jenisKelamin = immunisation.jenisKelamin.toLowerCase();
     immunisation.imunisasi.forEach((item) => {
       const name = item.name.split('_')[0];
-      const date = new Date(item.date);
+      const date = new Date(item.date); 
       const [tahun, bulan] = [date.getFullYear(), date.getMonth()];
       if (year === tahun && month === bulan + 1) {
         result[name][jenisKelamin]++;
