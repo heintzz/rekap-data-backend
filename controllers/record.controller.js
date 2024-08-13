@@ -201,7 +201,7 @@ const inferDataStatus = async (idAnak, usia, pertamaKali, beratBadan, tanggalPem
       return 'O,T';
     } else if (prevOne !== null) {
       return 'T';
-    } else if (prevOne === null && now === null) {
+    } else if (prevTwo !== null) {
       return 'T';
     } else {
       return '2T';
