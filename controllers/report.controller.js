@@ -161,6 +161,8 @@ const commitJumlahBalitaNaik = (data, month) => {
         summary['O'][jenisKelamin]++;
       } else if (prevOne !== null) {
         summary['T'][jenisKelamin]++;
+      } else if (prevOne === null && now === null) {
+        summary['T'];
       } else {
         summary['2T'][jenisKelamin]++;
       }
