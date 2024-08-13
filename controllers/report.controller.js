@@ -123,7 +123,6 @@ const commitJumlahBalitaNaik = (data, month) => {
       if (now !== null && prevOne !== null && prevTwo !== null) {
         const diffOne = parseFloat((now - prevOne).toFixed(2)) * 1000;
         const diffTwo = parseFloat((prevOne - prevTwo).toFixed(2)) * 1000;
-        console.log(thresholdCheck(usia, diffOne)[1] && thresholdCheck(usia - 1, diffTwo)[1]);
         if (thresholdCheck(usia, diffOne)[1] && thresholdCheck(usia - 1, diffTwo)[1]) {
           summary['2T'][jenisKelamin]++;
         } else if (diffOne > 0) {

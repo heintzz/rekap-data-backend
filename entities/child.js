@@ -132,8 +132,8 @@ const getRecordedChild = (data, year, month) => {
   }
 
   filteredData.forEach((child) => {
-    const [day, month, year] = child.tanggalLahir.split('/');
-    const dateObject = new Date(year, month, day);
+    const [day, bulan, tahun] = child.tanggalLahir.split('/');
+    const dateObject = new Date(tahun, bulan, day);
     const ageInMonths = calculateAgeInMonths(dateObject, year, month);
     const jenisKelamin = child.l === 'x' ? 'l' : 'p';
     childSummary.total[jenisKelamin]++;
@@ -188,7 +188,7 @@ const getImmunisationSummary = async (year, month) => {
     let jenisKelamin = immunisation.jenisKelamin.toLowerCase();
     immunisation.imunisasi.forEach((item) => {
       const name = item.name.split('_')[0];
-      const date = new Date(item.date); 
+      const date = new Date(item.date);
       const [tahun, bulan] = [date.getFullYear(), date.getMonth()];
       if (year === tahun && month === bulan + 1) {
         result[name][jenisKelamin]++;

@@ -212,7 +212,6 @@ const inferDataStatus = async (idAnak, usia, pertamaKali, beratBadan, tanggalPem
 const createRecord = async (req, res) => {
   const { usia, beratBadan, jenisKelamin, tinggiBadan, idAnak, pertamaKali, tanggalPencatatan } =
     req.body;
-  console.log(tanggalPencatatan);
 
   const status = inferNutritionStatus(usia, beratBadan, tinggiBadan, jenisKelamin);
   const statusPerkembangan = await inferDataStatus(
